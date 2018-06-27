@@ -1,25 +1,31 @@
+#Imports
 import pygame, random, sys, time
 from pygame.locals import *
 
+#Setting up the pygame window
 width,height,topMenu=800,600,0
 pygame.init()
 gameDisplay=pygame.display.set_mode((width,height+topMenu))
+
+#Fonts to be used for display
 font = pygame.font.SysFont("comicsansms", 60)
 font1 = pygame.font.SysFont("comicsansms", 25)
 
+#Colors to be used
 white=(255,255,255)
 black=(0,0,0)
 red=(255,0,0)
 green=(0,255,0)
 blue=(0,0,255)
 
-
+#Method for drawinf text on the pygame window
 def drawtext(text, font, surface, x, y):        
     textobj = font.render(text, 1, blue)
     textrect = textobj.get_rect()
     textrect.topleft = (x,y)
     surface.blit(textobj, textrect)
 
+#Keeps the track of all the dead pieces on the board
 def deadPiece(piece):
     data=piece.getName()
     if data[1] is "White":
@@ -33,7 +39,9 @@ def deadPiece(piece):
         else:
             deadBlack[1].append(piece)
 
+#Draws the dead pieces of both the players on both the sides of the board
 def drawDeadPiece():
+    #For drawing dead white pieces
     for itr in deadWhite:
         k=0
         for piece in itr:
@@ -43,7 +51,8 @@ def drawDeadPiece():
             else:
                 piece.drawPieceByCoordinates(width-(width-height)/2+40,k*height/8+topMenu,data[1])
             k+=1
-
+            
+    #For drawing dead black pieces
     for itr in deadBlack:
         k=0
         for piece in itr:
@@ -54,10 +63,18 @@ def drawDeadPiece():
                 piece.drawPieceByCoordinates(40,k*height/8+topMenu,data[1])
             k+=1
 
+#Loads the image of the required name            
 def load_image(imagename):
     return pygame.image.load(imagename)
 
+"""
+Every object of this class is a piece on the chess board like Pawn, Rook, Knight, Bishop, Queen and King.
+It stores all the information of a piece like its name, which player it belongs to, its coordinates, etc.
+It contains methods for drawing the piece. 
+"""
+
 class Piece:
+    #Initializes the piece with its co-ordinates, name and which player it belongs to
     def __init__(self,x,y,name,player):
         self.name=name
         self.player=player
@@ -71,17 +88,21 @@ class Piece:
             self.adjustx,self.adjusty=5,10
         elif self.name is "Queen" or self.name is "King":
             self.adjustx,self.adjusty=9,10
-
+    
+    #It returns name and the player name it belongs to
     def getName(self):
         return [self.name,self.player]
 
+    #It returns the position of the piece
     def getPosition(self):
         return (self.x,self.y)
-
+    
+    #it sets the position of a piece. It used when a piecce is moved
     def setPosition(self,x,y):
         self.x=x
         self.y=y
 
+    #It displays the piece on the board    
     def drawPiece(self):
         if self.player is "White":
             player="1"
@@ -97,6 +118,7 @@ class Piece:
         self.imagerect.top = self.y*height/8+self.adjusty+topMenu
         gameDisplay.blit(self.image,self.imagerect)
 
+    #It displays the piece on the board    
     def drawPieceByCoordinates(self,x,y,player):
         if player is "White":
             player="1"
@@ -109,17 +131,26 @@ class Piece:
         self.imagerect.top = y+topMenu
         gameDisplay.blit(self.image,self.imagerect)
 
-            
+"""
+It is used for storing the chess Grid. As there is only one chess grid. List grid is made static.
+The grid list contains all the objects of pieces present on the board. If any element is None then it means that there is no piece at that position.
+It's methods are used for displaying the grid, drawing the pieces,etc.
+"""
 class Grid:
+    #Static lsit grid
     grid=[]
+    
+    #Iniatializes the grid at the start of the game.
     def __init__(self):
         self.grid=[[None for j in range(8)] for i in range(8)]
         self.grid[0][6],self.grid[1][6],self.grid[2][6],self.grid[3][6],self.grid[4][6],self.grid[5][6],self.grid[6][6],self.grid[7][6],self.grid[0][7],self.grid[1][7],self.grid[2][7],self.grid[3][7],self.grid[4][7],self.grid[5][7],self.grid[6][7],self.grid[7][7]=Piece(0,6,"Pawn","White"),Piece(1,6,"Pawn","White"),Piece(2,6,"Pawn","White"),Piece(3,6,"Pawn","White"),Piece(4,6,"Pawn","White"),Piece(5,6,"Pawn","White"),Piece(6,6,"Pawn","White"),Piece(7,6,"Pawn","White"),Piece(0,7,"Rook","White"),Piece(1,7,"Knight","White"),Piece(2,7,"Bishop","White"),Piece(3,7,"Queen","White"),Piece(4,7,"King","White"),Piece(5,7,"Bishop","White"),Piece(6,7,"Knight","White"),Piece(7,7,"Rook","White")
         self.grid[0][1],self.grid[1][1],self.grid[2][1],self.grid[3][1],self.grid[4][1],self.grid[5][1],self.grid[6][1],self.grid[7][1],self.grid[0][0],self.grid[1][0],self.grid[2][0],self.grid[3][0],self.grid[4][0],self.grid[5][0],self.grid[6][0],self.grid[7][0]=Piece(0,1,"Pawn","Black"),Piece(1,1,"Pawn","Black"),Piece(2,1,"Pawn","Black"),Piece(3,1,"Pawn","Black"),Piece(4,1,"Pawn","Black"),Piece(5,1,"Pawn","Black"),Piece(6,1,"Pawn","Black"),Piece(7,1,"Pawn","Black"),Piece(0,0,"Rook","Black"),Piece(1,0,"Knight","Black"),Piece(2,0,"Bishop","Black"),Piece(3,0,"Queen","Black"),Piece(4,0,"King","Black"),Piece(5,0,"Bishop","Black"),Piece(6,0,"Knight","Black"),Piece(7,0,"Rook","Black")
 
+    #Returns grid    
     def getGrid(self):
         return self.grid
 
+    #Displays the grid
     def displayGrid(self):
         for i in range(8):
             for j in range(8):
@@ -130,15 +161,20 @@ class Grid:
                 pygame.draw.rect(gameDisplay,black,(i*(height)/8+(width-height)/2,j*(height)/8+topMenu,(height)/8,(height)/8),1)
         self.drawPiece()
 
+    #Displays the pieces
     def drawPiece(self):
         for i in range(8):
             for j in range(8):
                 if self.grid[i][j]!=None:
                     self.grid[i][j].drawPiece()
                     
-
+"""
+It is responsible for handling turns of a player, checking whether a move is valid or not, checking for checks,checkmates, stalemates, 
+castelling, showing valid positions of a piece, etc.
+"""
 class Chess:
     grid=None
+    #Initialzes the game
     def __init__(self):
         self.grid=Grid()
         self.turn="White"
@@ -150,21 +186,25 @@ class Chess:
         self.rook_w_r=False
         self.rook_b_l=False
         self.rook_b_r=False
-
+    
+    #Keeps track of the turn
     def toggle_turn(self):
         if self.turn is "White":
             self.turn="Black"
         else:
             self.turn="White"
-
+            
+    #Returns which player's turn it is
     def getTurn(self):
         return self.turn
-
+    
+    #Checks if the player making the move has it's turn or not
     def correct_player(self,x,y):
         if self.grid.grid[x][y]!=None and self.grid.grid[x][y].player==self.turn:
             return True
         return False
 
+    #It moves th piece
     def movePiece(self,oldPosition,newPosition):
         #print(self.grid.grid[oldPosition[0]][oldPosition[1]].name is "King")
         if self.grid.grid[oldPosition[0]][oldPosition[1]].name is "King" and abs(newPosition[0]-oldPosition[0])==2:
