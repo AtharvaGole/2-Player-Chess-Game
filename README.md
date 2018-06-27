@@ -9,7 +9,8 @@ pygame
 
 Features:
 1. All the types of legal moves as well as Check, Checkmate, Stalemate and Castelling are present in the game.
-2. When a player clicks on a piece then all the valid moves of that piece are displayed on the chess board.
+2. Ther also an option for a player for getting a queen, rook, kinght or a bishop when one of his pawn reaches the other side of the chess board.
+3. When a player clicks on a piece then all the valid moves of that piece are displayed on the chess board.
 
 How to run the program:
 Python 3.5 nad pygame must be installed in your computer. 
